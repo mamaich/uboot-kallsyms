@@ -1,2 +1,17 @@
-# uboot-kallsyms
-Extract symbols from u-boot as Ida Pro idc sceipt
+# Скрипт по извлечению адресов символов u-boot в формате IDC
+
+Некоторые u-boot для современных устройств (например, Яндекс mini 3 pro) содержат в себе таблицу, содержащую адреса и названия символов. Скрипт ищет данную таблицу в дампе и генерирует по ней IDC скрипт, переименовывающий функции в найденные.
+
+Пример итогового скрипта:
+#include <idc.idc>
+#define BASE_ADDR 0x1000000
+static main(void)
+{
+  set_name(BASE_ADDR + 0x0000000000000000, "__image_copy_start");
+  set_name(BASE_ADDR + 0x0000000000000000, "_start");
+  set_name(BASE_ADDR + 0x0000000000000004, "__scs_bl33_devkey");
+  // ...
+  set_name(BASE_ADDR + 0x00000000000c2450, "parse_eeprom");
+}
+
+Вручную исправьте BASE_ADDR на требуемый (в случае pickle удобно его выставить в 0 и загрузить u-boot в IDA по нулевому адресу).
